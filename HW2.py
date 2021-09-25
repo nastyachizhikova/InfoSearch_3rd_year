@@ -19,29 +19,30 @@ vectorizer = TfidfVectorizer(analyzer='word')
 
 def get_all_docs() -> List[str]:
     """
-    достаем все файлы с текстами субтитров и отдельно - их названия
+    достаем все файлы с текстами субтитров и отдельно сохраняем их названия
     """
     all_docs = []
     episodes_names = []
+
     curr_dir = os.getcwd()
+    folder_dir = os.path.join(curr_dir, 'friends-data')
 
-    for i in range(7):
-        foldername = os.path.join(curr_dir, 'friends-data', f'Friends - season {i+1}')
-        filenames = os.listdir(foldername)
-        for fpath in filenames:
-            episode_name = fpath.split(' - ')[1] + ' ' + fpath.split(' - ')[2].split('.')[0]
-            episodes_names.append(episode_name)
+    for root, dirs, files in os.walk(folder_dir):
+        for name in files:
+            if name.endswith('.txt'):
+                episodes_names.append(os.path.splitext(name)[0])
+                filename = os.path.join(root, name)
 
-            with open(os.path.join(foldername, fpath), 'r', encoding='utf-8') as f:
-                episode_text = f.read()
-                all_docs.append(episode_text)
+                with open(filename, 'r', encoding='utf-8') as f:
+                    episode_text = f.read()
+                    all_docs.append(episode_text)
 
     assert len(all_docs) == 165
 
     return all_docs, episodes_names
 
 
-def unify_names(text: str) -> str:
+def unify_names(tokens: List[str]) -> List[str]:
     """
     приводим все имена в текстах к общему виду
     """
@@ -54,10 +55,14 @@ def unify_names(text: str) -> str:
                   'рэйчел': 'рейчел',
                   'рейч': 'рейчел'}
 
-    for item, value in names_dict.items():
-        text = text.replace(item, value)
+    new_tokens = []
+    for token in tokens:
+        if token in names_dict.keys():
+            new_tokens.append(names_dict[token])
+        else:
+            new_tokens.append(token)
 
-    return text
+    return new_tokens
 
 
 def preprocess(text: str) -> str:
@@ -66,10 +71,10 @@ def preprocess(text: str) -> str:
     убираем не-слова и стоп-слова, лемматизируем
     """
     text = text.lower()
-    text = unify_names(text)
+    words = unify_names(word_tokenize(text))
     new_words = []
 
-    for word in word_tokenize(text):
+    for word in words:
         if word.isalpha() and word not in stop_words:
             parse = morph.parse(word)[0]
             new_words.append(parse.normal_form)
