@@ -45,7 +45,7 @@ def get_best_answer(question_answers: dict) -> str:
 
 def get_answers_questions_corpus(corpus: List[dict]) -> Tuple[list, list]:
     '''
-    фцнкция, получающая файл с полным корпусом и выдающая корпус только лучших ответов
+    фцнкция, получающая файл с полным корпусом и выдающая корпус вопросов и только лучших ответов
     '''
     ans_corpus = []
     quest_corpus = []
