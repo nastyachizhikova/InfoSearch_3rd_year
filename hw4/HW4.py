@@ -62,7 +62,7 @@ def get_answers_questions_corpus(corpus: List[dict]) -> Tuple[list, list]:
 
 def get_raw_data(filename: str) -> list:
     '''
-    функиця, которая читет json файл и получает сырой корпус ответов (если он уже не сохранен в файле)
+    функиця, которая читет json файл и получает сырой корпус ответов и вопросов (если он уже не сохранен в файле)
     '''
     curr_dir = os.getcwd()
     raw_path = os.path.join(curr_dir, 'raw_data.txt')
@@ -74,7 +74,7 @@ def get_raw_data(filename: str) -> list:
     else:
         with open(filename, 'r', encoding='utf-8') as f:
             corpus = list(f)[:50000]
-            raw_data = get_answers_corpus(corpus)
+            raw_data = get_answers_questions_corpus(corpus)
 
         with open('raw_data.txt', 'w', encoding='utf-8') as file:
             file.write(str(raw_data))
